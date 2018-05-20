@@ -6,12 +6,14 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/15 18:54:39 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/17 17:26:38 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/19 15:59:56 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../include/ft_ls.h"
+
+
 
 char		valid_arg(char c)
 {
@@ -19,18 +21,53 @@ char		valid_arg(char c)
 			c == 'r' || c == 't');
 }
 
-char	*get_path(char *arg_lst)
+ssize_t	str_is_chr(char *s, char c)
+{
+	ssize_t count;
+
+	count = 0;
+	while(*s && (*s == c || *s == '/'))
+	{	
+		if(*s == c)
+			count++;
+		s++;
+	}
+	return (!*s ? (count / 2) : -1);
+}
+
+char	*chop_path(char *path, size_t chop_count)
+{
+	char *ret;
+	ssize_t len;
+
+	len = (ssize_t)strlen(path);
+	while(--len >= 0 && chop_count > 0)
+		if(path[len] == '/')
+			chop_count--;
+	ret = strndup(path, (&path[len] - path) + 1);
+	free (path);
+	path = ret;
+	return (path);
+}
+
+char	*get_path(char *target)
 {
 	char *path;
+	ssize_t	dot_count;
 
 	if (!(path = (char *)malloc(sizeof(char) * 1024)))
 		throw_err("MALLOC ERROR");
 	if(!getcwd(path, 1024))
 		throw_err("getcwd error");
-	if(arg_lst)
+	if(target)
 	{
-		strcat(path, "/");
-		strcat(path, arg_lst);
+		if((dot_count = str_is_chr(target, '.')) > 1)
+			return(chop_path(path, (size_t)dot_count));
+		else
+		{		
+			strcat(path, "/");
+			strcat(path, target);
+		}
 	}	
 	return (path);
 }
