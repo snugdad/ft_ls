@@ -5,131 +5,67 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/05/15 18:47:40 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/19 17:35:19 by egoodale         ###   ########.fr       */
+/*   Created: 2018/05/26 11:46:50 by egoodale          #+#    #+#             */
+/*   Updated: 2018/05/29 15:02:30 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_ls.h"
 
-int		throw_err(char *msg)
+t_file	*init_file_lst(char **av, int ac, int first)
 {
-	printf("%s\n", msg);
-	exit(0);
+	VAR(t_file *, head, NULL);
+	VAR(int, i, -1);
+
+	if (ac == 0)
+		add_new_file("", ".", &head);
+	else	
+		ft_sortwords(av, (size_t)ac);
+	while (++i < ac)
+		if (add_new_file("", av[i], &head) == -1 && first)
+			ls_error(av[i], ERRNO);
+	return (head);
 }
 
-/*int		builddirs(const char *path, char flags, t_entry *head)
+int		check_args(int ac, char **av, int *flags)
 {
-	DIR *dir_stream;
-	ch
-	if (!(dir_stream = opendir(path)))
-		return (-1);
-	while (head->dp = readdir(dir_stream))
+	int		i;
+	int		j;
+
+	*flags = 0;
+	i = 0;
+	while(++i < ac && av[i][0] == '-')
 	{
-		if (stat(head->e_label->d_name, head->e_data) < 0)
-			return (-1);
-		printf("Information for %s\n",);
-		printf("---------------------------\n");
-		printf("File Size: \t\t%d bytes\n",fileStat.st_size);
-		printf("Number of Links: \t%d\n",fileStat.st_nlink);
-		printf("File inode: \t\t%d\n",fileStat.st_ino);
- 
-		printf("File Permissions: \t");
-		printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
-		printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
-		printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
-		printf( (fileStat.st_mode & S_IXUSR) ? "x" : "-");
-		printf( (fileStat.st_mode & S_IRGRP) ? "r" : "-");
-		printf( (fileStat.st_mode & S_IWGRP) ? "w" : "-");
-		printf( (fileStat.st_mode & S_IXGRP) ? "x" : "-");
-		printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
-		printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
-		printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
-		printf("\n\n");
-		
-	}*/
-int		init_structs(t_entry *head)
-{
-	if(!(head->e_data = (struct stat *)malloc(sizeof(struct stat))))
-		throw_err("Malloc Error");
-	return (0);
-}
-int		init_entry(t_entry *head)
-{
-		DIR *dir;
-		struct dirent	*dp;
-		char buf[512];
-
-		dir = opendir(head->path);
-		init_structs(head);
-		while((dp = readdir(dir)))
+		j = 0;
+		while(av[i][++j])
 		{
-			sprintf(buf, "%s/%s", head->path, dp->d_name);
-			stat(buf, head->e_data);
-			printf("%lld", head->e_data->st_size);
-			printf(" %s\n", dp->d_name);
+			*flags |= av[i][j] == 'l' ? f_lngform : *flags;
+			*flags |= av[i][j] == 'R' ? f_recurse : *flags;
+			*flags |= av[i][j] == 'a' ? f_seedots : *flags;
+			*flags |= av[i][j] == 'r' ? f_revsort : *flags;
+			*flags |= av[i][j] == 't' ? f_timsort : *flags;
+			*flags |= av[i][j] == '@' ? f_prntatr : *flags;
+			*flags |= av[i][j] == 'G' ? f_coloset : *flags;
+			*flags |= av[i][j] == 'd' ? f_nmeonly : *flags;
 		}
-		closedir(dir);
-		return (0);
-}														
-
-  
- int ls_noarg(t_entry *head) 
- { 
-    DIR *dir;
-    struct dirent *dp;
-    unsigned int count;
-  
-	count = 0;
-    if(!head->path) 
-        throw_err("\n ERROR : Could not get the working directory\n");
-    dir = opendir(head->path); 
-	while((dp = readdir(dir)))
-        if(dp->d_name[0] != '.') 
-            printf("%s\t",dp->d_name);
-	printf("\n");
-	closedir(dir);
-    return 0; 
- }
-
-char	get_sortkey(char flags)
-{
-	char sortkey;
-
-	if(flags & r)
-		sortkey |= reverse;
-    if (flags & t)
-		sortkey |= by_time;
-	else
-		sortkey |= by_name;
+	}
+	return (i);
 }
 
 int main(int ac, char **av)
 {
-    char flags;
-	char sort_key;
-	t_entry head;
+	t_file *file_lst;
+    int flags;
+	int i;
+	int		nofiles = 0;
 
-	flags = 0;
-    if((flags = check_args(av, &head.path, ac)) < 0)
-        throw_err("INCORRECT ARGUMENT FORMAT");
-    if((sort_key = get_sortkey(flags)) < 0)
-		throw_err("INVALID SORT PATTERN");
-	if(!flags)
-		ls_noarg(&head);
-    if (flags & l)
-	/*SWITCH(flags,
-		CASE(flags & l,
-			printf("l is on\n")),
-		CASE(flags & a, 
-			printf("a is on\n")),
-		CASE(flags & R,
-			printf("R is on\n")),
-		CASE(flags & r,
-			printf("r is on\n")),
-		CASE(flags & at,
-			printf("at is on\n")),
-		DEFAULT(
-			printf("no flags are on\n")));*/
+    if((i = check_args(ac, av, &flags)) < 0)
+        return (1);
+	ac -= i;
+    av += i;
+	file_lst = init_file_lst(av, ac, 1);
+	nofiles = (!file_lst ? 1 : 0);
+	display_all(file_lst, flags, (!nofiles ? 1 : 2), ac);
+	free_list_content(&file_lst);
+	return (0);
 }
-
