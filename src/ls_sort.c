@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 15:40:52 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/30 14:29:49 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/30 14:51:37 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,9 @@ static t_file	*timesort(t_file *lst)
 			lst->next = lst_sort_time(lst->next);
 		}
 	}
-	return (lst);
-}
+	return (ls
+	*/
 
-
-t_file *timesort_merge(t_file *a, t_file *b, int key)
-{
-    node *t1 = 
-}*/
 t_file  *namesort_merge(t_file *a, t_file *b, int key)
 {
     VAR(t_file *, result, NULL);
@@ -67,20 +62,20 @@ t_file  *timesort_merge(t_file *a, t_file *b, int key)
     
     if(a->time > b->time)
     {
-        result = a;
-        result->next = sorted_merge(a->next, b, key);
+        result = !(key & f_revsort) ? a : b;
+        result->next = !(key & f_revsort) ? sorted_merge(a->next, b, key) : sorted_merge(a, b->next, key);
     }
     else if (a->time == b->time)
     {
-      if(a->ntime >= b->ntime && !(key & f_revsort))
+      if(a->ntime >= b->ntime)
       {
-        result = a;
-        result->next = sorted_merge(a->next, b, key);
+        result = !(key & f_revsort) ? a : b;
+        result->next = !(key & f_revsort) ? sorted_merge(a->next, b, key) : sorted_merge(a, b->next, key);
       }
       else
       {
-        result = b;
-        result->next = sorted_merge(a, b->next, key);
+        result = !(key & f_revsort) ? b : a;
+        result->next = !(key &f_revsort) ? sorted_merge(a, b->next, key) : sorted_merge(a->next, b, key);
       }
     }
     else
