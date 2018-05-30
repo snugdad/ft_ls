@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/15 19:03:21 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/30 13:50:56 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/30 15:12:08 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,10 +116,10 @@ static int  			display_basic_list(t_file *lst, int flags);
 int						free_list_content(t_file **lst);
 int						ls_namemax(t_file *lst);
 t_file					*lst_swap(t_file *p1, t_file *p2);
-t_file  				*sorted_merge(t_file *a, t_file *b, int key);
+t_file  				*sorted_merge(t_file *a, t_file *b, int key, t_bool timesort_delta);
 void    				front_back_split(t_file *source, t_file **front_ref, t_file **back_ref);
 void    				merge_sort(t_file **head_ref, int key);
-t_file  				*timesort_merge(t_file *a, t_file *b, int key);
+t_file  				*timesort_merge(t_file *a, t_file *b, int key, t_bool delta);
 t_file  				*namesort_merge(t_file *a, t_file *b, int key);
 
 //display
