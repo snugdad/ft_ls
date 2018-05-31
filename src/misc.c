@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 16:46:02 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/31 13:33:25 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/31 14:10:57 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,6 @@ void	display_time(t_file *file)
 	s = ctime(&(file->time)) + 4;
 	ft_printf(" %.12s ", s);
 }
-
-/*t_file	*lst_swap(t_file *p1, t_file *p2)
-{
-	p1->next = p2->next;
-	p2->next = p1;
-	return (p2);
-}*/
 
 int		ls_namemax(t_file *lst)
 {
