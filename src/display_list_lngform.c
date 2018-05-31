@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/29 20:35:43 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/31 14:07:21 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/31 15:10:36 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int					display_long(t_file *lst, int flags)
 	size_t	field_width[7];
 	int		first;
 	int		blocks;
-	
+
 	first = 1;
 	blocks = 0;
 	ft_bzero(field_width, sizeof(field_width));
