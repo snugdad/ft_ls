@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/15 19:03:21 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/30 15:12:08 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/30 22:33:33 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include <time.h>
 # include <sys/acl.h>
 
+#define LS_VALID_ARGS "lRart@Gd"
 #define ACL_BUFFERMAX 101
 #define PATH_MAX 1024
 #define MAJOR(x) ((x) & 0xffffff)
@@ -53,12 +54,6 @@ typedef struct	s_index
 	int			x;
 	int			y;
 }				t_index;
-
-typedef enum	e_sortkey
-{
-	by_time = (1 << 0),
-	reverse = (1 << 1)
-}				t_sortkey;
 
 typedef enum    e_lsflag
 {
@@ -95,13 +90,10 @@ typedef struct		s_file
 	blksize_t		st_blksize;
 	blkcnt_t		st_blocks;
 	struct s_file	*next;
-	struct s_file	*f_child;
-
 }					t_file;
-//MAIN
-t_file					*init_file_lst(char **av, int ac, int first);
-int						check_args(int ac, char **av, int *flags);
 
+t_file					*init_file_lst(char **av, int ac, int first);
+int						check_args(int ac, char **av, int *flags, int *error);
 static int				build_full_path(char path[PATH_MAX], char *name, char full_path[PATH_MAX]);
 static t_file			*create_new_file(char path[PATH_MAX], char *name, t_stat *stat);
 int     				add_new_file(char path[PATH_MAX], char *name, t_file **lst);
@@ -121,8 +113,6 @@ void    				front_back_split(t_file *source, t_file **front_ref, t_file **back_r
 void    				merge_sort(t_file **head_ref, int key);
 t_file  				*timesort_merge(t_file *a, t_file *b, int key, t_bool delta);
 t_file  				*namesort_merge(t_file *a, t_file *b, int key);
-
-//display
 int         			display_all(t_file *begin, int flags, int first, int n);
 void					display_name(t_file *l, int flags, int blocks_len);
 int    	 				display_long(t_file *lst, int flags);

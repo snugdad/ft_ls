@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 16:46:02 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/27 18:26:10 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/30 22:35:54 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,28 @@ int		free_list_content(t_file **lst)
 		*lst = (*lst)->next;
 	}
 	return (1);
+}
+
+int			ls_error(char *s, int error)
+{
+	if (error == USAGE)
+	{
+		ft_putstr_fd("ft_ls: illegal option -- ", 2);
+		ft_putchar_fd(*s, 2);
+		ft_putchar_fd('\n', 2);
+		ft_putendl_fd("usage: ft_ls [-lRart@Gd] [file ...]", 2);
+	}
+	else if (error == ERRNO || error == MALL_ERR)
+		ft_putstr_fd("ft_ls: ", 2);
+	if (error == ERRNO)
+	{
+		ft_putstr_fd(s, 2);
+		ft_putstr_fd(": ", 2);
+		ft_putendl_fd(strerror(errno), 2);
+	}
+	else if (error == ERRNO)
+		ft_putendl_fd(strerror(errno), 2);
+	if (error == USAGE || error == MALL_ERR)
+		exit(EXIT_FAILURE);
+	return (0);
 }

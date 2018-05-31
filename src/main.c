@@ -6,7 +6,7 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/26 11:46:50 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/29 15:02:30 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/30 22:34:01 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,26 +27,35 @@ t_file	*init_file_lst(char **av, int ac, int first)
 	return (head);
 }
 
-int		check_args(int ac, char **av, int *flags)
+unsigned	resolve_flag(int c)
 {
-	int		i;
-	int		j;
+	VAR(unsigned, ret, 0);
 
-	*flags = 0;
-	i = 0;
+	ret |= c == 'l' ? f_lngform : 0;
+	ret |= c == 'R' ? f_recurse : 0;
+	ret |= c == 'a' ? f_seedots : 0;
+	ret |= c == 'r' ? f_revsort : 0;
+	ret |= c == 't' ? f_timsort : 0;
+	ret |= c == '@' ? f_prntatr : 0;
+	ret |= c == 'G' ? f_coloset : 0;
+	ret |= c == 'd' ? f_nmeonly : 0;
+	return (ret);
+}
+
+int		check_args(int ac, char **av, int *flags, int *error)
+{
+	VAR(int, i, 0);
+	VAR(int, j, 0);
+	
 	while(++i < ac && av[i][0] == '-')
 	{
 		j = 0;
 		while(av[i][++j])
 		{
-			*flags |= av[i][j] == 'l' ? f_lngform : *flags;
-			*flags |= av[i][j] == 'R' ? f_recurse : *flags;
-			*flags |= av[i][j] == 'a' ? f_seedots : *flags;
-			*flags |= av[i][j] == 'r' ? f_revsort : *flags;
-			*flags |= av[i][j] == 't' ? f_timsort : *flags;
-			*flags |= av[i][j] == '@' ? f_prntatr : *flags;
-			*flags |= av[i][j] == 'G' ? f_coloset : *flags;
-			*flags |= av[i][j] == 'd' ? f_nmeonly : *flags;
+			if (ft_strchr(LS_VALID_ARGS, av[i][j]))
+				*flags |= resolve_flag(av[i][j]);
+			else
+				ls_error(&av[i][j], USAGE);
 		}
 	}
 	return (i);
@@ -54,18 +63,16 @@ int		check_args(int ac, char **av, int *flags)
 
 int main(int ac, char **av)
 {
-	t_file *file_lst;
-    int flags;
-	int i;
-	int		nofiles = 0;
+	VAR(t_file *, files, NULL);
+    VAR(int, flags, 0);
+	VAR(int, i, 0);
+	VAR(int, error, 0);
 
-    if((i = check_args(ac, av, &flags)) < 0)
-        return (1);
+    i = check_args(ac, av, &flags, &error);
 	ac -= i;
     av += i;
-	file_lst = init_file_lst(av, ac, 1);
-	nofiles = (!file_lst ? 1 : 0);
-	display_all(file_lst, flags, (!nofiles ? 1 : 2), ac);
-	free_list_content(&file_lst);
+	files = init_file_lst(av, ac, 1);
+	display_all(files, flags, (files ? 1 : 2), ac);
+	free_list_content(&files);
 	return (0);
 }

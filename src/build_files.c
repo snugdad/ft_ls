@@ -6,42 +6,17 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/26 14:18:42 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/29 15:32:25 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/30 21:51:03 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_ls.h"
 
-int			ls_error(char *s, int error)
-{
-	if (error == USAGE)
-	{
-		ft_putstr_fd("ft_ls: illegal option -- ", 2);
-		ft_putchar_fd(*s, 2);
-		ft_putchar_fd('\n', 2);
-		ft_putendl_fd("usage: ft_ls [-alRrtdG1Ss] [file ...]", 2);
-	}
-	else if (error == ERRNO || error == MALL_ERR)
-		ft_putstr_fd("ft_ls: ", 2);
-	if (error == ERRNO)
-	{
-		ft_putstr_fd(s, 2);
-		ft_putstr_fd(": ", 2);
-		ft_putendl_fd(strerror(errno), 2);
-	}
-	else if (error == ERRNO)
-		ft_putendl_fd(strerror(errno), 2);
-	if (error == USAGE || error == MALL_ERR)
-		exit(EXIT_FAILURE);
-	return (0);
-}
-
 static int		build_full_path(char path[PATH_MAX], char *name,
 								char full_path[PATH_MAX])
 {
-	int	i;
-
-	i = -1;
+	VAR(int, i, -1);
+	
 	while (path[++i])
 		full_path[i] = path[i];
 	if (i && i < PATH_MAX)
