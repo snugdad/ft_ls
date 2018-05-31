@@ -6,68 +6,66 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 14:31:31 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/29 20:11:09 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/31 14:05:40 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_ls.h"
 
-static  t_file  *read_folder(char path[PATH_MAX], char *name, int options)
+static t_file	*read_folder(char path[PATH_MAX], char *name, int options)
 {
-    VAR(t_file *, begin, NULL);
-    VAR(DIR *, folder, NULL);
-    VAR(t_dirent *, entry, NULL);
-
-    if(!(folder = opendir(path)))
-        ls_error(name, 0);
-    else if (!(options & f_nmeonly))
-    {
-        while ((entry = readdir(folder)))
-            if (entry->d_name[0] != '.' || (options & f_seedots))
-                add_new_file(path, entry->d_name, &begin);
-    }
-    else
-        add_new_file(path, ".", &begin);
-    if (folder) 
-        closedir(folder);
-    return (begin);        
+	VAR(t_file *, begin, NULL);
+	VAR(DIR *, folder, NULL);
+	VAR(t_dirent *, entry, NULL);
+	if (!(folder = opendir(path)))
+		ls_error(name, 0);
+	else if (!(options & f_nmeonly))
+	{
+		while ((entry = readdir(folder)))
+			if (entry->d_name[0] != '.' || (options & f_seedots))
+				add_new_file(path, entry->d_name, &begin);
+	}
+	else
+		add_new_file(path, ".", &begin);
+	if (folder)
+		closedir(folder);
+	return (begin);
 }
 
-static  void    display_full_path(char *full_path, int nof, int *first)
+static void		display_full_path(char *full_path, int nof, int *first)
 {
-   if (nof != 0 && nof != 1)
-   {
-       if (*first == 2)
-       {
-           *first = 1;
-           ft_printf("%s:\n", full_path);
-       }
-       else
-           ft_printf("\n%s:\n", full_path);
-   } 
+	if (nof != 0 && nof != 1)
+	{
+		if (*first == 2)
+		{
+			*first = 1;
+			ft_printf("%s:\n", full_path);
+		}
+		else
+			ft_printf("\n%s:\n", full_path);
+	}
 }
 
-int         display_all(t_file *begin, int flags, int first, int n)
+int				display_all(t_file *begin, int flags, int first, int n)
 {
-    VAR(t_file *, file, begin);
-
-   if (!(flags & f_recurse) && !first)
-        return (1);
-    while(file)
-    {
-        if (S_ISDIR(file->st_mode) && (first || (ft_strcmp(file->name, ".")
-        && ft_strcmp(file->name, ".."))))
-        {
-            display_full_path(file->full_path, n, &first);
-            begin = read_folder(file->full_path, file->name, flags);
-            if (begin)
-            {
-                display_list(&begin, flags);
-                display_all(begin, flags, 0, -1);
-                free_list_content(&begin);
-            }
-        }
-        file = file->next;
-    }
-    return (1);
+	VAR(t_file *, file, begin);
+	if (!(flags & f_recurse) && !first)
+		return (1);
+	while (file)
+	{
+		if (S_ISDIR(file->st_mode) && (first || (ft_strcmp(file->name, ".")
+		&& ft_strcmp(file->name, ".."))))
+		{
+			display_full_path(file->full_path, n, &first);
+			begin = read_folder(file->full_path, file->name, flags);
+			if (begin)
+			{
+				display_list(&begin, flags);
+				display_all(begin, flags, 0, -1);
+				free_list_content(&begin);
+			}
+		}
+		file = file->next;
+	}
+	return (1);
 }

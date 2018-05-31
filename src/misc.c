@@ -6,30 +6,38 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 16:46:02 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/30 22:35:54 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/31 13:33:25 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_ls.h"
 
-t_file	*lst_swap(t_file *p1, t_file *p2)
+void	display_time(t_file *file)
+{
+	time_t	today;
+	char	*s;
+
+	time(&today);
+	s = ctime(&(file->time)) + 4;
+	ft_printf(" %.12s ", s);
+}
+
+/*t_file	*lst_swap(t_file *p1, t_file *p2)
 {
 	p1->next = p2->next;
 	p2->next = p1;
 	return (p2);
-}
+}*/
 
 int		ls_namemax(t_file *lst)
 {
-	int		maxlen;
-
-	maxlen = 0;
+	VAR(int, namemax, 0);
 	while (lst)
 	{
-		maxlen = MAX(ft_strlen(lst->name), maxlen);
+		namemax = MAX(ft_strlen(lst->name), namemax);
 		lst = lst->next;
 	}
-	return (maxlen);
+	return (namemax);
 }
 
 int		free_list_content(t_file **lst)
@@ -43,7 +51,7 @@ int		free_list_content(t_file **lst)
 	return (1);
 }
 
-int			ls_error(char *s, int error)
+int		ls_error(char *s, int error)
 {
 	if (error == USAGE)
 	{

@@ -6,17 +6,34 @@
 /*   By: egoodale <egoodale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/26 14:18:42 by egoodale          #+#    #+#             */
-/*   Updated: 2018/05/30 21:51:03 by egoodale         ###   ########.fr       */
+/*   Updated: 2018/05/31 14:00:15 by egoodale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_ls.h"
 
-static int		build_full_path(char path[PATH_MAX], char *name,
-								char full_path[PATH_MAX])
+char					get_file_acl(char path[PATH_MAX])
+{
+	char		buf[ACL_BUFFERMAX];
+	acl_t		acl;
+	acl_entry_t dummy;
+
+	if (listxattr(path, buf, ACL_BUFFERMAX, XATTR_NOFOLLOW))
+		return ('@');
+	if ((acl = acl_get_link_np(path, ACL_TYPE_EXTENDED)))
+		if (acl && (acl_get_entry(acl, ACL_FIRST_ENTRY, &dummy) == -1))
+		{
+			acl_free(acl);
+			acl = NULL;
+			return ('+');
+		}
+	return (' ');
+}
+
+static inline int		build_full_path(char path[PATH_MAX], char *name,
+										char full_path[PATH_MAX])
 {
 	VAR(int, i, -1);
-	
 	while (path[++i])
 		full_path[i] = path[i];
 	if (i && i < PATH_MAX)
@@ -31,7 +48,8 @@ static int		build_full_path(char path[PATH_MAX], char *name,
 	return ((i < PATH_MAX) ? 1 : 0);
 }
 
-static t_file	*create_new_file(char path[PATH_MAX], char *name, t_stat *stat)
+static inline t_file	*create_new_file(char path[PATH_MAX], char *name,
+										t_stat *stat)
 {
 	t_file	*new;
 
@@ -52,18 +70,19 @@ static t_file	*create_new_file(char path[PATH_MAX], char *name, t_stat *stat)
 	return (new);
 }
 
-int     add_new_file(char path[PATH_MAX], char *name, t_file **lst)
+int						add_new_file(char path[PATH_MAX], char *name,
+									t_file **lst)
 {
-    char    full_path[PATH_MAX];
-    t_stat  stat;
+	char	full_path[PATH_MAX];
+	t_stat	stat;
 
-    if(!(build_full_path(path, name, full_path)))
+	if (!(build_full_path(path, name, full_path)))
 	{
 		ls_error(name, 1);
 		return (FAILURE);
 	}
 	if (lstat(full_path, &stat) < 0)
-		return(FAILURE);
+		return (FAILURE);
 	if (!*lst)
 		*lst = create_new_file(path, name, &stat);
 	else
